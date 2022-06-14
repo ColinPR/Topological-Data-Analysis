@@ -4,6 +4,7 @@ Function to construct a test network for Primitive users
 
 import networkx as nx
 import numpy as np
+import random
 
 
 def watts_hub(population, nearest_neighbors, prob_rewiring, seed, weighting):
@@ -16,7 +17,7 @@ def watts_hub(population, nearest_neighbors, prob_rewiring, seed, weighting):
 
     return G
 
-def directed_growing_network(population, seed, weighting):
+def directed_growing_network(population, seed, remove):
 
     G = nx.gn_graph(n=population-1, seed=seed)
     G.add_node(population-1)
@@ -27,8 +28,13 @@ def directed_growing_network(population, seed, weighting):
         G[edge[0]][edge[1]]['weight'] = weights[edge_idx]
         edge_idx += 1
     for node_idx in range(0,population-1):
-        G.add_edge(node_idx,population-1,weight = weighting)
-        G.add_edge(population-1,node_idx,weight = weighting)
+        G.add_edge(node_idx,population-1,weight = np.random.rand())
+        G.add_edge(population-1,node_idx,weight = np.random.rand())
+
+    if remove > 0:
+        random.seed(1)
+        to_remove = random.sample(G.edges(),k=remove)
+        G.remove_edges_from(to_remove)
 
     #print(G.edges())
     #print(nx.get_edge_attributes(G,'weight'))
